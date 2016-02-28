@@ -42,28 +42,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    // This method will get called when the app open a URL
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
         print(url.description)
+        // requestToken is going to be a part after ? in the passed URL
         let requestToken = BDBOAuth1Credential(queryString: url.query)
+        
+        // Create session manager to fetch access token
         let twitterClient = BDBOAuth1SessionManager(baseURL: NSURL(string: "https://api.twitter.com")!, consumerKey: "OE3KwJeNtpgj4T1yRGwQq9EMx", consumerSecret: "o14d7m2TMSdptbIew3Gf276yF2FKzxt9XKHxBlSLr3DUiFxtji")
         
+        // Jump to oauth/access_token URL with POST method and requestToken which has been gotten before
+        // To obtain accessToken
         twitterClient.fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential!) -> Void in
+            // Inside success handler with an argument; accessToken
+            // The result is going to be passed to accessToken variable
             print("I got the access token!")
+            
             // https://dev.twitter.com/rest/reference/get/account/verify_credentials
+            // Call GET to get account information
             twitterClient.GET("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                // Inside success handler with two argument; task and response
+                // The result is going to be passed to response
                 //print("acount: \(response)")
                 let user = response as! NSDictionary
                 print("name: \(user["name"])")
+                
+                // failure handler with two argument; task and response
                 }, failure: {(task: NSURLSessionDataTask?, response: AnyObject?) -> Void in
                 
-            })
+                })
             
+            // Method: GET
+            // Endpoint: 1.1/statuses/home_timeline.json
             twitterClient.GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: {(task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                // Inside success handler passed two arguments. task and response
+                
+                // get tweets from response returned from GET API method
                 let tweets = response as! [NSDictionary]
+                
+                // Iterate through tweet array of dictionary
                 for tweet in tweets {
+                    // Print text contained by each tweet
                     print("\(tweet["text"]!)")
                 }
                 }, failure: {(task: NSURLSessionDataTask?, error: NSError) -> Void in
+                // Inside failure handler passed two argument. task and error
+                // error contains what happened if error happened
                     
                 })
             
