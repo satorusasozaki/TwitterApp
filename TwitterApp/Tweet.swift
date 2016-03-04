@@ -8,6 +8,10 @@
 
 import UIKit
 
+// How to create a model class to deserialize
+// 1. Create variables as containers for each component
+// 2. Break the big object like dictionary into the containers
+
 class Tweet: NSObject {
     var text: NSString?
     var timestamp: NSDate?
