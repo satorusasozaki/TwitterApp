@@ -28,7 +28,7 @@ class LoginViewControler: UIViewController {
         twitterClient.deauthorize()
         
         // Go and get request token and assign it to requestToken
-        // Callback contains the app extension (twitterapp://) to go back to this app
+        // Callback contains the app extension (twitterapp://) to go back to this app   
         twitterClient.fetchRequestTokenWithPath("oauth/request_token", method: "GET", callbackURL: NSURL(string: "twitterapp://oauth"), scope: nil, success: {(requestToken: BDBOAuth1Credential!) -> Void in
             print("I got a token!")
             // Authorize the application to access my account
