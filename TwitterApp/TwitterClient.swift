@@ -14,6 +14,46 @@ class TwitterClient: BDBOAuth1SessionManager {
     // static make it cannot be overwritten
     static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")!, consumerKey: "OE3KwJeNtpgj4T1yRGwQq9EMx", consumerSecret: "o14d7m2TMSdptbIew3Gf276yF2FKzxt9XKHxBlSLr3DUiFxtji")
     
+    var loginSuccess: (() -> ())?
+    var loginFailure: ((NSError) -> ())?
+    
+    func login(success: () -> (), failure: (NSError) -> ()) {
+        loginSuccess = success
+        loginFailure = failure
+        
+        // Clear everything in keychain to prevent any problems
+        TwitterClient.sharedInstance.deauthorize()
+        
+        // Go and get request token and assign it to requestToken
+        // Callback contains the app extension (twitterapp://) to go back to this app
+        TwitterClient.sharedInstance.fetchRequestTokenWithPath("oauth/request_token", method: "GET", callbackURL: NSURL(string: "twitterapp://oauth"), scope: nil, success: {(requestToken: BDBOAuth1Credential!) -> Void in
+            // Authorize the application to access my account
+            let url = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")!
+            // Open Safari to the url
+            UIApplication.sharedApplication().openURL(url)
+            
+            }) { (error : NSError!) -> Void in
+                print("error: \(error.localizedDescription)")
+                self.loginFailure?(error)
+        }
+    }
+    
+    func handleOpenUrl(url : NSURL) {
+        // requestToken is going to be a part after ? in the passed URL
+        let requestToken = BDBOAuth1Credential(queryString: url.query)
+        
+        // Jump to oauth/access_token URL with POST method and requestToken which has been gotten before
+        // To obtain accessToken
+        fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential!) -> Void in
+            print("I got the access token!")
+            self.loginSuccess?()
+            
+            }) {(error: NSError!) -> Void in
+                print("error: \(error.localizedDescription)")
+                self.loginFailure?(error)
+        }
+    }
+    
     func homeTimeline(success: ([Tweet]) -> (), failure: (NSError) -> ()) {
         
         // Method: GET
@@ -21,23 +61,11 @@ class TwitterClient: BDBOAuth1SessionManager {
         GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: {(task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             // Inside success handler passed two arguments. task and response
             
-            //                // get tweets from response returned from GET API method
-            //                let tweets = response as! [NSDictionary]
-            //
-            //                // Iterate through tweet array of dictionary
-            //                for tweet in tweets {
-            //                    // Print text contained by each tweet
-            //                    print("\(tweet["text"]!)")
-            //                }
-            
             // Use Tweet class
             let dictionaries = response as! [NSDictionary]
             let tweets = Tweet.tweetsWithArray(dictionaries)
             
-//            for tweet in tweets {
-//                print("\(tweet.text!)")
-//            }
-            // Call success closure
+            // Call success closure to print tweets
             success(tweets)
             
             }, failure: {(task: NSURLSessionDataTask?, error: NSError) -> Void in

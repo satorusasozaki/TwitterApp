@@ -45,31 +45,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // This method will get called when the app open a URL
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
         print(url.description)
-        // requestToken is going to be a part after ? in the passed URL
-        let requestToken = BDBOAuth1Credential(queryString: url.query)
-        
-        // Jump to oauth/access_token URL with POST method and requestToken which has been gotten before
-        // To obtain accessToken
-        
-        let client = TwitterClient.sharedInstance
-        
-        client.fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential!) -> Void in
-            // Inside success handler with an argument; accessToken
-            // The result is going to be passed to accessToken variable
-            print("I got the access token!")
 
-            client.homeTimeline({ (tweets: [Tweet]) -> () in
-                for tweet in tweets {
-                    print(tweet.text)
-                }
-            }, failure: { (error: NSError) -> () in
-                print(error.localizedDescription)
-            })
-            client.currentAccount()
-            
-            }) {(error: NSError!) -> Void in
-                print("error: \(error.localizedDescription)")
-        }
+        TwitterClient.sharedInstance.handleOpenUrl(url)
+        
+
         return true
     }
 
