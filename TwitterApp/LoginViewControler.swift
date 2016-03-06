@@ -18,6 +18,7 @@ class LoginViewControler: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        self.presentViewController(<#T##viewControllerToPresent: UIViewController##UIViewController#>, animated: <#T##Bool#>, completion: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>)
     }
     
     @IBAction func onLoginButton(sender: AnyObject) {
@@ -30,3 +31,5 @@ class LoginViewControler: UIViewController {
     }
     
 }
+
+// 

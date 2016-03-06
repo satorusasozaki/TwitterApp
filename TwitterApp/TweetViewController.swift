@@ -35,8 +35,9 @@ class TweetViewController: UIViewController {
 //    }
 
     @IBAction func onLogoutButton(sender: AnyObject) {
-//        self.dismissViewControllerAnimated(true, completion: nil)
-        self.navigationController?.popViewControllerAnimated(true)
+        
+        self.dismissViewControllerAnimated(true, completion: nil)
+        
         TwitterClient.sharedInstance.logout()
     }
 }
