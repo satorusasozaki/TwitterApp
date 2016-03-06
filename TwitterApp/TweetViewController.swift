@@ -30,11 +30,13 @@ class TweetViewController: UIViewController {
 //    override func viewWillDisappear(animated: Bool) {
 //        super.viewWillDisappear(animated)
 ////        navigationController!.popViewControllerAnimated(true)
-//        self.dismissViewControllerAnimated(true, completion: nil)
+//        self.dismissViewControllerAnimated(true, completion:
 //        print("TweetViewController will disappear")
 //    }
 
     @IBAction func onLogoutButton(sender: AnyObject) {
+//        self.dismissViewControllerAnimated(true, completion: nil)
+        self.navigationController?.popViewControllerAnimated(true)
         TwitterClient.sharedInstance.logout()
     }
 }
