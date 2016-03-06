@@ -26,16 +26,7 @@ class LoginViewControler: UIViewController {
             self.performSegueWithIdentifier("loginSegue", sender: nil)
         }, failure: { (error: NSError) -> () in
             print("Error: \(error.localizedDescription)")
-        })
-        
-        // There are two way to write how to pass two argment to closure
-//        client.login({ () -> () in
-//            print("I've logged in!")
-//        }) { (error: NSError) -> () in
-//                print("Error: \(error.localizedDescription)")
-//        }
-
-        
+        })        
     }
     
 }
